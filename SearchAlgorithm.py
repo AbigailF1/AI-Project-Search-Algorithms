@@ -7,6 +7,7 @@ from heapq import heappop, heappush
 
 class GraphVisualizer:
     def __init__(self):
+        # Initialize attributes first
         self.graph = {}
         self.heuristics = {}
         self.start = None
@@ -22,49 +23,50 @@ class GraphVisualizer:
         self.path_display = []
         self.goal_found = False
 
-        # Setup the main figure
-        self.fig, self.ax = plt.subplots(figsize=(8, 6))
-        plt.subplots_adjust(left=0.3, bottom=0.3)
+        # Setup the main figure with wider dimensions for better visibility
+        self.fig, self.ax = plt.subplots(figsize=(10, 6))  # Increase the figure width
+        plt.subplots_adjust(left=0.35, bottom=0.3)  # Adjust left spacing to make widgets more visible
 
         # Add widgets
-        self.ax_menu = plt.axes([0.05, 0.7, 0.2, 0.25])
+        self.ax_menu = plt.axes([0.05, 0.7, 0.25, 0.25])  # Increase width of the RadioButtons
         self.menu = RadioButtons(self.ax_menu, ["BFS", "DFS", "DLS", "IDDFS", "UCS", "Bidirectional", "Best-First", "A*"])
 
-        self.ax_start = plt.axes([0.05, 0.55, 0.2, 0.05])
+        self.ax_start = plt.axes([0.05, 0.55, 0.25, 0.05])  # Increase width of TextBox
         self.start_box = TextBox(self.ax_start, "Start Node:")
 
-        self.ax_goal = plt.axes([0.05, 0.45, 0.2, 0.05])
+        self.ax_goal = plt.axes([0.05, 0.45, 0.25, 0.05])
         self.goal_box = TextBox(self.ax_goal, "Goal Node:")
 
-        self.ax_edge = plt.axes([0.05, 0.35, 0.2, 0.05])
+        self.ax_edge = plt.axes([0.05, 0.35, 0.25, 0.05])
         self.edge_box = TextBox(self.ax_edge, "Edge (u,v,w):")
 
-        self.ax_depth = plt.axes([0.05, 0.25, 0.2, 0.05])
+        self.ax_depth = plt.axes([0.05, 0.25, 0.25, 0.05])
         self.depth_box = TextBox(self.ax_depth, "Depth Limit (DLS):")
 
-        self.ax_apply_depth = plt.axes([0.3, 0.25, 0.1, 0.05])
+        self.ax_apply_depth = plt.axes([0.35, 0.25, 0.1, 0.05])  # Adjust spacing for Apply Depth button
         self.btn_apply_depth = Button(self.ax_apply_depth, "Apply Depth")
         self.btn_apply_depth.on_clicked(self.apply_depth_limit)
 
-        self.ax_add_edge = plt.axes([0.05, 0.15, 0.1, 0.05])
-        self.btn_add_edge = Button(self.ax_add_edge, "Add Edge")
-
-        self.ax_clear_edges = plt.axes([0.15, 0.15, 0.1, 0.05])
-        self.btn_clear_edges = Button(self.ax_clear_edges, "Clear Edges")
-
-        self.ax_heuristics = plt.axes([0.05, 0.05, 0.2, 0.05])
+        self.ax_heuristics = plt.axes([0.05, 0.05, 0.25, 0.05])
         self.heuristic_box = TextBox(self.ax_heuristics, "Node, Heuristic:")
 
-        self.ax_add_heuristic = plt.axes([0.15, 0.05, 0.1, 0.05])
+        self.ax_add_heuristic = plt.axes([0.32, 0.05, 0.15, 0.05])  # Increased horizontal spacing
         self.btn_add_heuristic = Button(self.ax_add_heuristic, "Add Heuristic")
 
-        self.ax_start_algo = plt.axes([0.25, 0.05, 0.2, 0.05])
+        # Adjust button positions for better spacing and alignment
+        self.ax_add_edge = plt.axes([0.05, 0.15, 0.12, 0.05])  # Add Edge button
+        self.btn_add_edge = Button(self.ax_add_edge, "Add Edge")
+
+        self.ax_clear_edges = plt.axes([0.18, 0.15, 0.12, 0.05])  # Clear Edges button
+        self.btn_clear_edges = Button(self.ax_clear_edges, "Clear Edges")
+
+        self.ax_start_algo = plt.axes([0.31, 0.15, 0.15, 0.05])  # Start Algorithm button
         self.btn_start_algo = Button(self.ax_start_algo, "Start Algorithm")
 
-        self.ax_next = plt.axes([0.45, 0.05, 0.1, 0.05])
+        self.ax_next = plt.axes([0.47, 0.15, 0.12, 0.05])  # Next Step button
         self.btn_next = Button(self.ax_next, "Next Step")
 
-        self.ax_quit = plt.axes([0.55, 0.05, 0.1, 0.05])
+        self.ax_quit = plt.axes([0.60, 0.15, 0.1, 0.05])  # Quit button
         self.btn_quit = Button(self.ax_quit, "Quit")
 
         # Attach callbacks
@@ -79,6 +81,8 @@ class GraphVisualizer:
         self.ax_path_display = plt.axes([0.65, 0.05, 0.3, 0.05])
         self.path_textbox = TextBox(self.ax_path_display, "Path:")
         self.path_textbox.set_val("Traversal path will appear here.")
+
+        # Draw the graph initially
         self.draw_graph()
 
     def draw_graph(self):
@@ -104,6 +108,7 @@ class GraphVisualizer:
         self.ax.set_axis_off()
         self.fig.canvas.draw_idle()
 
+
     def add_edge(self, event):
         """Add an edge to the graph."""
         edge = self.edge_box.text
@@ -119,6 +124,18 @@ class GraphVisualizer:
         except ValueError:
             print("Invalid edge format. Use 'u,v,w'.")
 
+
+    def release_mouse_input(self):
+        """Release mouse input for all widgets."""
+        widgets = [
+            self.start_box, self.goal_box, self.edge_box, 
+            self.depth_box, self.heuristic_box, self.path_textbox
+        ]
+        for widget in widgets:
+            if hasattr(widget, 'disconnect_events'):
+                widget.disconnect_events()
+
+
     def add_heuristic(self, event):
         """Add heuristic values for nodes."""
         heuristic_input = self.heuristic_box.text
@@ -128,8 +145,11 @@ class GraphVisualizer:
             heuristic = float(heuristic.strip())
             self.heuristics[node] = heuristic
             print(f"Added heuristic: {node} -> {heuristic}")
+            self.path_textbox.set_val(f"Added heuristic: {node} -> {heuristic}")
         except ValueError:
             print("Invalid heuristic format. Use 'node, heuristic'.")
+            self.path_textbox.set_val("Invalid heuristic format. Use 'node, heuristic'.")
+
     
     def apply_depth_limit(self, event):
         """Apply the depth limit for DLS."""
@@ -156,7 +176,7 @@ class GraphVisualizer:
         print(f"Selected algorithm: {self.algorithm}")
 
     def start_algorithm(self, event):
-        """Initialize the selected algorithm."""
+        """Initialize the    selected algorithm."""
         self.start = self.start_box.text.strip()
         self.goal = self.goal_box.text.strip()
         self.goal_found = False
@@ -188,11 +208,19 @@ class GraphVisualizer:
             self.dfs_stack.append(self.start)
         elif self.algorithm == "UCS":
             heappush(self.pq, (0, self.start))
+
         elif self.algorithm in ["Best-First", "A*"]:
-            if self.start in self.heuristics:
-                heappush(self.pq, (self.heuristics[self.start], self.start))
-            else:
-                print("Heuristic value for start node is missing.")
+            if self.start not in self.heuristics:
+                print(f"Error: Heuristic value for the start node '{self.start}' is missing. Add it before starting.")
+                self.path_textbox.set_val(f"Error: Missing heuristic for '{self.start}'")
+                return
+            for node in self.graph:
+                if node not in self.heuristics:
+                    print(f"Warning: Heuristic value for node '{node}' is missing. Defaulting to infinity.")
+                    self.heuristics[node] = float('inf')
+            heappush(self.pq, (self.heuristics[self.start], self.start))
+
+
         elif self.algorithm == "Bidirectional":
             self.bidirectional_queue = {
                 "start": deque([self.start]),
@@ -385,11 +413,12 @@ class GraphVisualizer:
             for neighbor, _ in self.graph[self.current_node]:
                 if neighbor not in self.visited:
                     self.visited.add(neighbor)
-                    heuristic = self.heuristics.get(neighbor, float('inf'))
-                    heappush(self.pq, (heuristic, neighbor))
+                    neighbor_heuristic = self.heuristics.get(neighbor, float('inf'))
+                    heappush(self.pq, (neighbor_heuristic, neighbor))
                     self.edge_colors[(self.current_node, neighbor)] = "blue"
         else:
             print("Best-First traversal complete.")
+
 
     def a_star_step(self):
         """Perform one step of A* Search."""
@@ -407,12 +436,14 @@ class GraphVisualizer:
 
             for neighbor, weight in self.graph[self.current_node]:
                 if neighbor not in self.visited:
+                    self.visited.add(neighbor)
                     heuristic = self.heuristics.get(neighbor, float('inf'))
                     total_cost = cost + weight + heuristic
                     heappush(self.pq, (total_cost, neighbor))
                     self.edge_colors[(self.current_node, neighbor)] = "blue"
         else:
             print("A* traversal complete.")
+
 
 
             
