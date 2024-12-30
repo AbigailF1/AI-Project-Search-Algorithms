@@ -28,26 +28,26 @@ class GraphVisualizer:
         plt.subplots_adjust(left=0.35, bottom=0.3)  # Adjust left spacing to make widgets more visible
 
         # Add widgets
-        self.ax_menu = plt.axes([0.05, 0.7, 0.25, 0.25])  # Increase width of the RadioButtons
+        self.ax_menu = plt.axes([0.09, 0.7, 0.25, 0.25])  # Increase width of the RadioButtons
         self.menu = RadioButtons(self.ax_menu, ["BFS", "DFS", "DLS", "IDDFS", "UCS", "Bidirectional", "Best-First", "A*"])
 
-        self.ax_start = plt.axes([0.05, 0.55, 0.25, 0.05])  # Increase width of TextBox
+        self.ax_start = plt.axes([0.09, 0.55, 0.25, 0.05])  # Increase width of TextBox
         self.start_box = TextBox(self.ax_start, "Start Node:")
 
-        self.ax_goal = plt.axes([0.05, 0.45, 0.25, 0.05])
+        self.ax_goal = plt.axes([0.09, 0.45, 0.25, 0.05])
         self.goal_box = TextBox(self.ax_goal, "Goal Node:")
 
-        self.ax_edge = plt.axes([0.05, 0.35, 0.25, 0.05])
+        self.ax_edge = plt.axes([0.09, 0.35, 0.25, 0.05])
         self.edge_box = TextBox(self.ax_edge, "Edge (u,v,w):")
 
-        self.ax_depth = plt.axes([0.05, 0.25, 0.25, 0.05])
+        self.ax_depth = plt.axes([0.09, 0.25, 0.25, 0.05])
         self.depth_box = TextBox(self.ax_depth, "Depth Limit (DLS):")
 
         self.ax_apply_depth = plt.axes([0.35, 0.25, 0.1, 0.05])  # Adjust spacing for Apply Depth button
         self.btn_apply_depth = Button(self.ax_apply_depth, "Apply Depth")
         self.btn_apply_depth.on_clicked(self.apply_depth_limit)
 
-        self.ax_heuristics = plt.axes([0.05, 0.05, 0.25, 0.05])
+        self.ax_heuristics = plt.axes([0.09, 0.05, 0.25, 0.05])
         self.heuristic_box = TextBox(self.ax_heuristics, "Node, Heuristic:")
 
         self.ax_add_heuristic = plt.axes([0.32, 0.05, 0.15, 0.05])  # Increased horizontal spacing
